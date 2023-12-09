@@ -1,0 +1,118 @@
+
+/* Colors from Materialize */
+:root {
+    --teal-lighten-5: #e0f2f1;
+    --teal-lighten-4: #b2dfdb; 
+    --teal-lighten-3: #80cbc4; 
+    --teal-lighten-2: #4db6ac; 
+    --teal-lighten-1: #26a69a; 
+    --teal: #009688;
+    --teal-darken-1: #00897b; 
+    --teal-darken-2: #00796b; 
+    --teal-darken-3: #00695c; 
+    --teal-darken-4: #004d40; 
+    --teal-accent-1: #a7ffeb; 
+    --teal-accent-2: #64ffda; 
+    --teal-accent-3: #1de9b6; 
+    --teal-accent-4: #00bfa5;
+}
+
+body {
+    background-color: #140d24;
+}
+
+/* Pulse animation */
+.status-icon {
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    box-shadow: 0px 0px 25px 25px #0000001a;
+  }
+
+.active-scraper {
+    background: greenyellow;
+}
+
+.inactive-scraper {
+    background: crimson;
+}
+  
+  .pulse {
+    animation: pulse-animation 1s infinite;
+  }
+  
+  @keyframes pulse-animation {
+    0% {
+      box-shadow: 0 0 0 0px rgba(0, 0, 0, 0.2);
+    }
+    100% {
+      box-shadow: 0 0 0 50px rgba(0, 0, 0, 0);
+    }
+  }
+  
+  
+  .master{
+    color:black;
+    float:right;
+  }
+  
+  @media (max-width:900px){
+    .master{
+      display:none
+    }
+  }
+/* End Pulse Animation */
+
+/* Table styling */
+#rec-tbl {
+    display: block;
+    margin-left: 20%;
+}
+
+#rec-tbl-body {
+    display: inherit;
+    max-height: 300px;
+    overflow-y: scroll;
+}
+/* Hide Table Scroll bar */
+::-webkit-scrollbar {
+    width: 0px;
+}
+
+#rec-tbl thead {
+    position: sticky;
+}
+
+th, td {
+    text-align: center;
+    border-collapse: collapse;
+}
+/* This got the width to match */
+#rec-tbl thead, th,
+#rec-tbl-body tr, td {
+    min-width: 200px;
+}
+th {
+    background-color: var(--teal-darken-4);
+    color: var(--teal-lighten-3);
+}
+.day-del-checkbox, .day-sel-span {
+    color: var(--teal-lighten-3);
+}
+
+td {
+    border: 1px solid var(--teal-darken-4);
+}
+
+tr {
+    color: var(--teal-darken-4);
+}
+tr:nth-child(even) {
+    background-color: var(--teal-accent-2);
+}
+
+tr:nth-child(odd) {
+    background-color: var(--teal-accent-1);
+}
+
+/* End Table Styling */
