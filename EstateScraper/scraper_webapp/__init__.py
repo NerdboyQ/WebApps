@@ -1,3 +1,4 @@
+from scraper_webapp.scripts import dependency_checker
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 import os
