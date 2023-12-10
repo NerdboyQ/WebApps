@@ -2,6 +2,12 @@
 document.addEventListener('DOMContentLoaded', function() {
     const tbl = document.querySelector("#rec-tbl-body");
     var scraperRuns = [{_id: '1', records_found: '215', run_date: '12/07/2023_23:37:06', search_range_end_date: '12/06/2023', search_range_start_date: '12/06/2023'}];
+    var rptTimeInputH = document.querySelector("#rpt-time-hr");
+    var rptTimeInputM = document.querySelector("#rpt-time-mm");
+    var rptTimeInputAmPm = document.querySelector(".am-pm-switch");
+    rptTimeInputAmPm.addEventListener('change', function() {
+        console.log("changed: " + rptTimeInputAmPm.checked);
+    })
     getScraperRuns();
     var SETTINGS = {};
     get_settings();
@@ -119,7 +125,14 @@ document.addEventListener('DOMContentLoaded', function() {
             console.log("RepeatTime: " + SETTINGS.repeat_time);
             
             timepicker.time = SETTINGS.repeat_time.split(" ")[0];
-            
+            var tmp_time = SETTINGS.repeat_time.split(" ");
+            rptTimeInputH.value = parseInt(tmp_time[0].split(":")[0]);
+            rptTimeInputM.value = parseInt(tmp_time[0].split(":")[1]);
+            if (tmp_time[1].includes("AM")){
+                rptTimeInputAmPm.checked = false;
+            } else {
+                rptTimeInputAmPm.checked = true;
+            }
             if (SETTINGS.scraper_running != "False") {
                 console.log("Scraper is running: " + SETTINGS.scraper_running);
                 setScraperStatus(true);
