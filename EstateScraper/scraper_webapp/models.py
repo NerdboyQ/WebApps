@@ -11,8 +11,8 @@ def cleanRecordForJson(d: dict):
 class Settings(db.Model):
     _id = db.Column(db.String(120), nullable=False, primary_key=True)
     frequency = db.Column(db.String(120), nullable=False, default="")
-    repeat = db.Column(db.Boolean, nullable=False, default="")
     repeat_days = db.Column(db.String(120), nullable=False, default="")
+    repeat_range = db.Column(db.Integer, nullable=False, default=1)
     repeat_time = db.Column(db.String(120), nullable=False, default="")
     scraper_running = db.Column(db.Boolean, nullable=False, default=False)
 
