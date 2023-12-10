@@ -60,6 +60,10 @@ def req_scraper():
 def update_settings():
     print("req:", request.json)
     rec = Settings.query.get(0)
+    if "repeat_range" in request.json:
+        rec.repeat_range = request.json['repeat_range']
+        db.session.commit()
+
     if "repeat_time" in request.json:
         print(f" Setting the repeat_time: {request.json['repeat_time']}")
         rec.repeat_time = request.json["repeat_time"]

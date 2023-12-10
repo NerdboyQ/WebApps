@@ -5,9 +5,11 @@ document.addEventListener('DOMContentLoaded', function() {
     var rptTimeInputH = document.querySelector("#rpt-time-hr");
     var rptTimeInputM = document.querySelector("#rpt-time-mm");
     var rptTimeInputAmPm = document.querySelector(".am-pm-switch");
+    var rptDateRng = document.querySelector("#rpt-date-rng");
     rptTimeInputH.addEventListener('change', handleRepeatTimeUpdate);
     rptTimeInputM.addEventListener('change', handleRepeatTimeUpdate);
     rptTimeInputAmPm.addEventListener('change', handleRepeatTimeUpdate);
+    rptDateRng.addEventListener('change', handleRepeatTimeUpdate);
     getScraperRuns();
     var SETTINGS = {};
     get_settings();
@@ -37,7 +39,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
     var run_scrpr_btn = document.querySelector('#run-scrpr-btn');
     //var clr_dates_btn = document.querySelector('#clr-dates-btn');
-    run_scrpr_btn.addEventListener('click', run_scraper);
+    run_scrpr_btn.addEventListener('click', function(){
+        run_scraper(false);
+    });
     //clr_dates_btn.addEventListener('click', clearDatePickerFields);
 
     console.log(moment().format('HH:MM'))
@@ -115,6 +119,7 @@ document.addEventListener('DOMContentLoaded', function() {
             console.log("RepeatTime: " + SETTINGS.repeat_time);
             
             var tmp_time = SETTINGS.repeat_time.split(" ");
+            rptDateRng.value = SETTINGS.repeat_range;
             rptTimeInputH.value = parseInt(tmp_time[0].split(":")[0]);
             rptTimeInputM.value = parseInt(tmp_time[0].split(":")[1]);
             rptTimeInputH.value = rptTimeInputH.value.replace(/\D/g, '');
@@ -189,7 +194,7 @@ document.addEventListener('DOMContentLoaded', function() {
         fetch('/update-settings', {
             "method": "POST",
             "headers": {"Content-Type": "application/json"},
-            "body": JSON.stringify({"repeat_time":newTime}),
+            "body": JSON.stringify({"repeat_time":newTime, "repeat_range":rptDateRng.value}),
         })
         .then(get_settings);
     }
@@ -200,6 +205,7 @@ document.addEventListener('DOMContentLoaded', function() {
         opt = document.querySelectorAll('option')[idx];
         console.log("opt_txt: " + opt.text);
         if (opt.text === 'Daily') {
+            rptDateRng.value = 1;
             checkboxes.forEach((box) => {
                 box.checked = true;
             })
@@ -211,6 +217,7 @@ document.addEventListener('DOMContentLoaded', function() {
         let data = {
             "frequency" : opt.text,
             "repeat_time": newTime,
+            "repeat_range": rptDateRng.value,
         };
         
         fetch('/update-settings', {
@@ -256,13 +263,27 @@ document.addEventListener('DOMContentLoaded', function() {
         setTimeout(updateClock, 1000);
     }
     
-    function run_scraper(){
+    function run_scraper(scheduledRun=true){
         console.log("running scraper");
-        console.log(startDatePicker.value);
-        console.log(endDatePicker.value);
+        console.log("dtPicker start : " + startDatePicker.value);
+        console.log("dtPicker stop : " + endDatePicker.value);
         
         setScraperStatus(true);
-        const url = "../run-scraper?start=" + startDatePicker.value + "&end=" + endDatePicker.value;
+        var url = "../run-scraper?start=" + startDatePicker.value + "&end=" + endDatePicker.value;
+        if(scheduledRun){
+            const endDate = moment().format('MM/DD/YYYY');
+            var strDate = moment().subtract(1,'days').format('MM/DD/YYYY');
+            if (SETTINGS.frequency === 'Weekly'){
+                strDate = moment().subtract(rptDateRng.value,'days').format('MM/DD/YYYY');
+            }
+            console.log("schDate str: " + strDate);
+            console.log("schDate end: " + endDate);
+            url = "../run-scraper?start=" + strDate + "&end=" + endDate;
+        }
+
+
+        console.log('settings: ' + SETTINGS.frequency);
+        
         $.getJSON( url,
             function(data) {
             console.log(data);
