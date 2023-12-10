@@ -5,9 +5,9 @@ document.addEventListener('DOMContentLoaded', function() {
     var rptTimeInputH = document.querySelector("#rpt-time-hr");
     var rptTimeInputM = document.querySelector("#rpt-time-mm");
     var rptTimeInputAmPm = document.querySelector(".am-pm-switch");
-    rptTimeInputAmPm.addEventListener('change', function() {
-        console.log("changed: " + rptTimeInputAmPm.checked);
-    })
+    rptTimeInputH.addEventListener('change', handleRepeatTimeUpdate);
+    rptTimeInputM.addEventListener('change', handleRepeatTimeUpdate);
+    rptTimeInputAmPm.addEventListener('change', handleRepeatTimeUpdate);
     getScraperRuns();
     var SETTINGS = {};
     get_settings();
@@ -35,26 +35,10 @@ document.addEventListener('DOMContentLoaded', function() {
     startDatePicker.value = strtDate;
     endDatePicker.value = lastDate;
 
-    var timepickerElem = document.querySelector('.timepicker');
-    var timepickerOptions = {
-        onCloseEnd: handleRepeatTimeUpdate,
-    };
-    var timepicker = M.Timepicker.init(timepickerElem, timepickerOptions);
-    timepickerOptions.onCloseEnd = handleRepeatTimeUpdate;
-    //timepicker.value = moment().format('HH:MM');
-    // These two lines update the text field for the timepicker 
-    timepicker._updateTimeFromInput();
-    timepicker.done();
-
     var run_scrpr_btn = document.querySelector('#run-scrpr-btn');
     //var clr_dates_btn = document.querySelector('#clr-dates-btn');
     run_scrpr_btn.addEventListener('click', run_scraper);
     //clr_dates_btn.addEventListener('click', clearDatePickerFields);
-
-    
-    //timepicker.done();
-
-    
 
     console.log(moment().format('HH:MM'))
     //get_settings();
@@ -66,9 +50,21 @@ document.addEventListener('DOMContentLoaded', function() {
             const val = checkbox.checked;
             const tmp = {};
             tmp[day] = val;
+            rptTimeInputH.value = rptTimeInputH.value.replace(/\D/g, '');
+            if (rptTimeInputH.value.length === 1){
+                rptTimeInputH.value = '0' + rptTimeInputH.value;
+            }
+            rptTimeInputM.value = rptTimeInputM.value.replace(/\D/g, '');
+            if (rptTimeInputM.value.length === 1){
+                rptTimeInputM.value = '0' + rptTimeInputM.value;
+            }
+            var newTime = rptTimeInputH.value + ":" + rptTimeInputM.value + " AM";
+            if (rptTimeInputAmPm.checked) {
+                newTime = newTime.replace('AM', 'PM');
+            }
             let data = {
                 "days" : tmp,
-                "repeat_time": timepicker.value,
+                "repeat_time": newTime,
             };
 
             console.log('Setting ' + day + ' to ' + val)
@@ -107,10 +103,6 @@ document.addEventListener('DOMContentLoaded', function() {
         setDefaultDate: true
     };
     
-    var timepickerOptions = {
-        
-    };
-    
     var SETTINGS = {};
     
     function get_settings(){
@@ -120,14 +112,19 @@ document.addEventListener('DOMContentLoaded', function() {
             console.log("Settings:\n" + typeof(SETTINGS));
             console.log("Retrieved Settings: \n")
             console.log(SETTINGS);
-
-            
             console.log("RepeatTime: " + SETTINGS.repeat_time);
             
-            timepicker.time = SETTINGS.repeat_time.split(" ")[0];
             var tmp_time = SETTINGS.repeat_time.split(" ");
             rptTimeInputH.value = parseInt(tmp_time[0].split(":")[0]);
             rptTimeInputM.value = parseInt(tmp_time[0].split(":")[1]);
+            rptTimeInputH.value = rptTimeInputH.value.replace(/\D/g, '');
+            if (rptTimeInputH.value.length === 1){
+                rptTimeInputH.value = '0' + rptTimeInputH.value;
+            }
+            rptTimeInputM.value = rptTimeInputM.value.replace(/\D/g, '');
+            if (rptTimeInputM.value.length === 1){
+                rptTimeInputM.value = '0' + rptTimeInputM.value;
+            }
             if (tmp_time[1].includes("AM")){
                 rptTimeInputAmPm.checked = false;
             } else {
@@ -139,12 +136,6 @@ document.addEventListener('DOMContentLoaded', function() {
             } else {
                 console.log("Scraper is NOT running: " + SETTINGS.scraper_running);
                 setScraperStatus(false);
-            }
-            
-            if (SETTINGS.repeat_time.includes('PM')){
-                timepicker.amOrPm = "PM";
-            } else {
-                timepicker.amOrPm = "AM";
             }
             
             if (SETTINGS.frequency != 'N/A'){
@@ -182,8 +173,19 @@ document.addEventListener('DOMContentLoaded', function() {
     
     
     function handleRepeatTimeUpdate (){
-        let newTime = timepicker.time + " " + timepicker.amOrPm;
-        console.log('changing repeat time to: ' + newTime);
+        rptTimeInputH.value = rptTimeInputH.value.replace(/\D/g, '');
+        if (rptTimeInputH.value.length === 1){
+            rptTimeInputH.value = '0' + rptTimeInputH.value;
+        }
+        rptTimeInputM.value = rptTimeInputM.value.replace(/\D/g, '');
+        if (rptTimeInputM.value.length === 1){
+            rptTimeInputM.value = '0' + rptTimeInputM.value;
+        }
+        var newTime = rptTimeInputH.value + ":" + rptTimeInputM.value + " AM";
+        if (rptTimeInputAmPm.checked) {
+            newTime = newTime.replace('AM', 'PM');
+        }
+        console.log("new time change: " + newTime);
         fetch('/update-settings', {
             "method": "POST",
             "headers": {"Content-Type": "application/json"},
@@ -202,10 +204,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 box.checked = true;
             })
         }
-        
+        var newTime = rptTimeInputH.value + ":" + rptTimeInputM.value + " AM";
+        if (rptTimeInputAmPm.checked) {
+            newTime = newTime.replace('AM', 'PM');
+        }
         let data = {
             "frequency" : opt.text,
-            "repeat_time": timepicker.value,
+            "repeat_time": newTime,
         };
         
         fetch('/update-settings', {
@@ -232,9 +237,9 @@ document.addEventListener('DOMContentLoaded', function() {
         const cmpr_dt = timer.DD + "/" + timer.mm + "/" + timer.YY + ":" + timer.hh + ":" + timer.mm + ":" + timer.ss;
         const trig_tm = timer.hh +":" + timer.mm + " " + timer.ap;
 
-        //console.log('Scraper Running: ' + scraperRunning + "; repeat time: " + SETTINGS.repeat_time + "; repeat Days: " + SETTINGS.repeat_days);
-        //console.log('trigger time: ' + trig_tm);
-        //console.log('same: ' + (trig_tm === SETTINGS.repeat_time));
+        // console.log('Scraper Running: ' + scraperRunning + "; repeat time: " + SETTINGS.repeat_time + "; repeat Days: " + SETTINGS.repeat_days);
+        // console.log('trigger time: ' + trig_tm);
+        // console.log('same: ' + (trig_tm === SETTINGS.repeat_time));
         if (Object.keys(SETTINGS).length === 0){
             console.log("empty settings");
         } else if (!scraperRunning & SETTINGS.repeat_days.includes(timer.dd) & 
