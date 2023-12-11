@@ -97,13 +97,13 @@ p {
     position: sticky;
 }
 
-th, td {
+#rec_tbl th, td {
     text-align: center;
     border-collapse: collapse;
 }
 /* This got the width to match */
-#rec-tbl thead, th,
-#rec-tbl-body tr, td {
+#rec-tbl thead, #rec-tbl th,
+#rec-tbl-body tr, #rec-tbl-body td {
     min-width: 200px;
 }
 th {
