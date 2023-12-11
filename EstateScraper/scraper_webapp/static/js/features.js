@@ -29,6 +29,12 @@ document.addEventListener('DOMContentLoaded', function() {
     console.log(strtDate);
     M.AutoInit();
     var elems = document.querySelectorAll('.datepicker');
+    var datepickerOptions = {
+        format: 'mm/dd/yyyy',
+        autoClose : "true",
+        firstDay : 1,
+        setDefaultDate: true
+    };
     M.Datepicker.init(elems, datepickerOptions);
 
     var startDatePicker = document.querySelector('#start-date');
@@ -100,12 +106,7 @@ document.addEventListener('DOMContentLoaded', function() {
     var rpt_opts_dropdwn = document.querySelector('#rpt-options');
     rpt_opts_dropdwn.addEventListener('change', updateRepeatOpts);
     
-    var datepickerOptions = {
-        format: 'mm/dd/yyyy',
-        autoClose : "true",
-        firstDay : 1,
-        setDefaultDate: true
-    };
+    
     
     var SETTINGS = {};
     
@@ -143,7 +144,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 setScraperStatus(false);
             }
             
-            if (SETTINGS.frequency != 'N/A'){
+            //if (SETTINGS.frequency != 'N/A'){
                 rpt_opts_dropdwn.value = freq_opts[SETTINGS.frequency];
                 if (SETTINGS.frequency === 'Daily'){
                     
@@ -169,7 +170,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         });
                     }
                 }
-            }
+            //}
             
         })
         .then(getScraperRuns);
