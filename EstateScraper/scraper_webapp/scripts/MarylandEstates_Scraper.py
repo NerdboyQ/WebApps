@@ -32,9 +32,9 @@ def main(site, driver, wb, links, startDate, endDate):
     ws.cell(1,7,"Name")
     startDate_field = driver.find_element("xpath", "//input[@id='DateOfFilingFrom']")
     endedDate_field = driver.find_element("xpath", "//input[@id='DateOfFilingTo']")
-    
-    startDate_field.send_keys(startDate)
-    endedDate_field.send_keys(endDate)
+    print(f"sending keys {startDate} {endDate}")
+    startDate_field.send_keys(startDate.strip())
+    endedDate_field.send_keys(endDate.strip())
 
 
     driver.find_element("id", "cmdSearch").click()
@@ -318,6 +318,7 @@ async def run_scraper(startDate, endDate):
     run_date = datetime.datetime.now()
     start_time = run_date.time()
     print("started run at: "+str(start_time))
+    print(f"Running for date range of {startDate}-{endDate}")
     global scraperResults
     scraperResults = {
         "run_date": run_date.strftime("%m/%d/%Y_%H:%M:%S"),
@@ -335,6 +336,7 @@ async def run_scraper(startDate, endDate):
         scraperResults['rec_cnt'] = len(links)
     except Exception as e:
         print(f" ERROR: {e}")
+        driver.close()
         return scraperResults
     
     #links = ["https://registers.maryland.gov/rownetweb/estates/frmDocketImages.aspx?src=row&RecordId=502451354"]
